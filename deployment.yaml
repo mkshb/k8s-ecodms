@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ecodms
+  name: ecodms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ecodms
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.network/proxy: "true"
+        app: ecodms
+    spec:
+      containers:
+        - image: ecodms/ecodms:23.02-01
+          name: app-ecodms-app
+          ports:
+            - containerPort: 17001
+            - containerPort: 8180
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '100m'
+            limits:
+              memory: '4096Mi'
+              cpu: '2000m'              
+          volumeMounts:
+            - mountPath: /srv/data
+              name: ecodms-data
+            - mountPath: /srv/scaninput
+              name: ecodms-scaninput
+            - mountPath: /srv/backup
+              name: ecodms-backup
+            - mountPath: /srv/restore
+              name: ecodms-restore
+      restartPolicy: Always
+      volumes:
+        - name: ecodms-data
+          persistentVolumeClaim:
+            claimName: ecodms-data
+        - name: ecodms-scaninput
+          nfs:
+            server: <nfs-server-IP>
+            path: /path/to/ecodms/ScanInput
+        - name: ecodms-backup
+          nfs:
+            server: <nfs-server-IP>
+            path: /path/to/ecodms/backup
+        - name: ecodms-restore
+          nfs:
+            server: <nfs-server-IP>
+            path: /path/to/ecodms/restore

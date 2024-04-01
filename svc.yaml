@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ecodms
+  name: ecodms-https
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: ecodms
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ecodms
+  name: ecodms-postgres
+spec:
+  ports:
+    - name: postgres
+      port: 17002
+      targetPort: 17002
+  selector:
+    app: ecodms
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ecodms
+  name: ecodms-client
+spec:
+  ports:
+    - name: "17001"
+      port: 17001
+      targetPort: 17001
+  selector:
+    app: ecodms
+status:
+  loadBalancer: {}
